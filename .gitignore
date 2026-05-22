@@ -25,6 +25,10 @@ Debug/
 Release/
 __astcache/
 ModelSupport_*/
+*.res
+*.exe
+*.identcache
+dunitx-results.xml
 
 # ===== Project specific =====
 # NUNCA versionar credenciais reais
@@ -38,9 +42,10 @@ config.ini
 *.log
 *.dmp
 
-# ===== Editor =====
+# ===== Editor / harness =====
 .vscode/
 .idea/
+.claude/
 *.swp
 *.bak
 *~
