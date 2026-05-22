@@ -178,12 +178,56 @@ object FrmPedidoVenda: TFrmPedidoVenda
     Left = 8
     Top = 200
     Width = 804
-    Height = 272
+    Height = 230
     DefaultRowHeight = 22
     FixedCols = 0
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goThumbTracking]
     TabOrder = 2
     OnKeyDown = grdItensKeyDown
+  end
+  object pnlRodape: TPanel
+    Left = 8
+    Top = 438
+    Width = 804
+    Height = 74
+    BevelOuter = bvLowered
+    TabOrder = 3
+    object lblValorTotalCaption: TLabel
+      Left = 12
+      Top = 12
+      Width = 117
+      Height = 19
+      Caption = 'Valor Total do Pedido:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblValorTotal: TLabel
+      Left = 144
+      Top = 8
+      Width = 200
+      Height = 28
+      AutoSize = False
+      Caption = '0,00'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object btnGravarPedido: TButton
+      Left = 638
+      Top = 40
+      Width = 152
+      Height = 28
+      Caption = 'Gravar Pedido'
+      Enabled = False
+      TabOrder = 0
+    end
   end
 end

@@ -35,6 +35,11 @@ type
 
     grdItens: TStringGrid;
 
+    pnlRodape: TPanel;
+    lblValorTotalCaption: TLabel;
+    lblValorTotal: TLabel;
+    btnGravarPedido: TButton;
+
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure edCodigoClienteExit(Sender: TObject);
@@ -53,6 +58,7 @@ type
     procedure LimparCamposItem;
     procedure ConfigurarGrid;
     procedure RenderGrid;
+    procedure RecalcularTotal;
     function ValidarCamposItem(out AQtd: Double; out AValor: Currency): Boolean;
   end;
 
@@ -93,6 +99,8 @@ begin
   ConfigurarGrid;
   LimparCliente;
   LimparProduto;
+  RecalcularTotal;
+  btnGravarPedido.Enabled := False;
 end;
 
 procedure TFrmPedidoVenda.FormDestroy(Sender: TObject);
@@ -143,6 +151,17 @@ begin
     grdItens.Cells[COL_VLR_UNIT, i + 1]  := FormatFloat('#,##0.00', LItem.ValorUnitario);
     grdItens.Cells[COL_VLR_TOTAL, i + 1] := FormatFloat('#,##0.00', LItem.ValorTotal);
   end;
+end;
+
+procedure TFrmPedidoVenda.RecalcularTotal;
+var
+  LSoma: Currency;
+  LItem: TPedidoItem;
+begin
+  LSoma := 0;
+  for LItem in FItens do
+    LSoma := LSoma + LItem.ValorTotal;
+  lblValorTotal.Caption := FormatFloat('#,##0.00', LSoma);
 end;
 
 procedure TFrmPedidoVenda.LimparCliente;
@@ -286,6 +305,7 @@ begin
   LItem.ValorUnitario := LValor;
 
   RenderGrid;
+  RecalcularTotal;
   LimparCamposItem;
 end;
 
