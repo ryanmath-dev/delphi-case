@@ -63,6 +63,8 @@
         <DCCReference Include="src\Model\uModels.pas"/>
         <DCCReference Include="src\Repository\uClienteRepository.pas"/>
         <DCCReference Include="src\Repository\uProdutoRepository.pas"/>
+        <DCCReference Include="src\Repository\uPedidoRepository.pas"/>
+        <DCCReference Include="src\Service\uPedidoService.pas"/>
         <DCCReference Include="src\Infra\uConnectionFactory.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

@@ -47,6 +47,7 @@ type
     procedure btnInserirAtualizarItemClick(Sender: TObject);
     procedure grdItensKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnGravarPedidoClick(Sender: TObject);
   strict private
     FConn: TFDConnection;
     FClienteAtual: TCliente;
@@ -59,6 +60,8 @@ type
     procedure ConfigurarGrid;
     procedure RenderGrid;
     procedure RecalcularTotal;
+    procedure AtualizarHabilitacaoGravar;
+    procedure LimparPedido;
     function ValidarCamposItem(out AQtd: Double; out AValor: Currency): Boolean;
   end;
 
@@ -70,7 +73,8 @@ implementation
 uses
   uConnectionFactory,
   uClienteRepository,
-  uProdutoRepository;
+  uProdutoRepository,
+  uPedidoService;
 
 {$R *.dfm}
 
@@ -216,6 +220,7 @@ begin
   lblNomeValor.Caption := FClienteAtual.Nome;
   lblCidadeValor.Caption := FClienteAtual.Cidade;
   lblUFValor.Caption := FClienteAtual.UF;
+  AtualizarHabilitacaoGravar;
 end;
 
 procedure TFrmPedidoVenda.edCodigoProdutoExit(Sender: TObject);
@@ -307,6 +312,7 @@ begin
   RenderGrid;
   RecalcularTotal;
   LimparCamposItem;
+  AtualizarHabilitacaoGravar;
 end;
 
 procedure TFrmPedidoVenda.grdItensKeyDown(Sender: TObject; var Key: Word;
@@ -351,8 +357,73 @@ begin
           Dec(FIndiceEdicao);
 
         RenderGrid;
+        AtualizarHabilitacaoGravar;
         Key := 0;
       end;
+  end;
+end;
+
+procedure TFrmPedidoVenda.AtualizarHabilitacaoGravar;
+begin
+  btnGravarPedido.Enabled := (FClienteAtual.Codigo > 0) and (FItens.Count > 0);
+end;
+
+procedure TFrmPedidoVenda.LimparPedido;
+begin
+  FItens.Clear;
+  FIndiceEdicao := -1;
+  edCodigoCliente.Text := '';
+  LimparCliente;
+  edCodigoProduto.Text := '';
+  edQuantidade.Text := '1';
+  LimparProduto;
+  btnInserirAtualizarItem.Caption := 'Inserir Item';
+  RenderGrid;
+  RecalcularTotal;
+  AtualizarHabilitacaoGravar;
+  edCodigoCliente.SetFocus;
+end;
+
+procedure TFrmPedidoVenda.btnGravarPedidoClick(Sender: TObject);
+var
+  LPedido: TPedido;
+  LItemOrig, LItemCopia: TPedidoItem;
+  LNumero: Integer;
+begin
+  btnGravarPedido.Enabled := False;
+  try
+    LPedido := TPedido.Create;
+    try
+      LPedido.CodigoCliente := FClienteAtual.Codigo;
+      for LItemOrig in FItens do
+      begin
+        LItemCopia := TPedidoItem.Create;
+        LItemCopia.CodigoProduto := LItemOrig.CodigoProduto;
+        LItemCopia.Descricao     := LItemOrig.Descricao;
+        LItemCopia.Quantidade    := LItemOrig.Quantidade;
+        LItemCopia.ValorUnitario := LItemOrig.ValorUnitario;
+        LPedido.Itens.Add(LItemCopia);
+      end;
+
+      try
+        LNumero := TPedidoService.GravarPedido(FConn, LPedido);
+      except
+        on E: Exception do
+        begin
+          Application.MessageBox(PChar('Erro ao gravar pedido:' + sLineBreak + E.Message),
+            'Pedido de Venda', MB_OK or MB_ICONERROR);
+          Exit;
+        end;
+      end;
+
+      Application.MessageBox(PChar(Format('Pedido n. %d gravado com sucesso.',
+        [LNumero])), 'Pedido de Venda', MB_OK or MB_ICONINFORMATION);
+      LimparPedido;
+    finally
+      LPedido.Free;
+    end;
+  finally
+    AtualizarHabilitacaoGravar;
   end;
 end;
 

@@ -6,6 +6,8 @@ uses
   uModels in 'src\Model\uModels.pas',
   uClienteRepository in 'src\Repository\uClienteRepository.pas',
   uProdutoRepository in 'src\Repository\uProdutoRepository.pas',
+  uPedidoRepository in 'src\Repository\uPedidoRepository.pas',
+  uPedidoService in 'src\Service\uPedidoService.pas',
   uConnectionFactory in 'src\Infra\uConnectionFactory.pas';
 
 {$R *.res}

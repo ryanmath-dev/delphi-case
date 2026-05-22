@@ -228,6 +228,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
       Caption = 'Gravar Pedido'
       Enabled = False
       TabOrder = 0
+      OnClick = btnGravarPedidoClick
     end
   end
 end
