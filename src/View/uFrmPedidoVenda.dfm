@@ -215,9 +215,10 @@ object FrmPedidoVenda: TFrmPedidoVenda
     TabOrder = 3
     object lblValorTotalCaption: TLabel
       Left = 12
-      Top = 12
-      Width = 117
+      Top = 14
+      Width = 200
       Height = 19
+      AutoSize = False
       Caption = 'Valor Total do Pedido:'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -227,11 +228,12 @@ object FrmPedidoVenda: TFrmPedidoVenda
       ParentFont = False
     end
     object lblValorTotal: TLabel
-      Left = 144
+      Left = 218
       Top = 8
       Width = 200
       Height = 28
       AutoSize = False
+      Alignment = taRightJustify
       Caption = '0,00'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
