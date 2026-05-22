@@ -164,5 +164,25 @@ object FrmPedidoVenda: TFrmPedidoVenda
       Height = 23
       TabOrder = 2
     end
+    object btnInserirAtualizarItem: TButton
+      Left = 638
+      Top = 58
+      Width = 152
+      Height = 25
+      Caption = 'Inserir Item'
+      TabOrder = 3
+      OnClick = btnInserirAtualizarItemClick
+    end
+  end
+  object grdItens: TStringGrid
+    Left = 8
+    Top = 200
+    Width = 804
+    Height = 272
+    DefaultRowHeight = 22
+    FixedCols = 0
+    RowCount = 2
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goThumbTracking]
+    TabOrder = 2
   end
 end
