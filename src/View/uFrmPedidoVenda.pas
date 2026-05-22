@@ -21,6 +21,8 @@ type
     lblCidadeValor: TLabel;
     lblUFCaption: TLabel;
     lblUFValor: TLabel;
+    lblObservacao: TLabel;
+    edObservacao: TEdit;
 
     pnlItem: TPanel;
     lblCodigoProduto: TLabel;
@@ -406,6 +408,7 @@ begin
   FItens.Clear;
   FIndiceEdicao := -1;
   edCodigoCliente.Text := '';
+  edObservacao.Text := '';
   LimparCliente;
   edCodigoProduto.Text := '';
   edQuantidade.Text := '1';
@@ -428,6 +431,7 @@ begin
     LPedido := TPedido.Create;
     try
       LPedido.CodigoCliente := FClienteAtual.Codigo;
+      LPedido.Observacao    := Trim(edObservacao.Text);
       for LItemOrig in FItens do
       begin
         LItemCopia := TPedidoItem.Create;

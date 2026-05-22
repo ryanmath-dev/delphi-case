@@ -23,8 +23,9 @@ const
     'SELECT NEXT VALUE FOR GEN_PEDIDO_NUMERO AS PROX FROM RDB$DATABASE';
 
   SQL_INSERT_PEDIDO =
-    'INSERT INTO PEDIDO (NUMERO_PEDIDO, DATA_EMISSAO, CODIGO_CLIENTE, VALOR_TOTAL) ' +
-    'VALUES (:numero, :data_emissao, :codigo_cliente, :valor_total)';
+    'INSERT INTO PEDIDO ' +
+    '  (NUMERO_PEDIDO, DATA_EMISSAO, CODIGO_CLIENTE, VALOR_TOTAL, OBSERVACAO) ' +
+    'VALUES (:numero, :data_emissao, :codigo_cliente, :valor_total, :observacao)';
 
   SQL_INSERT_ITEM =
     'INSERT INTO PEDIDO_ITEM ' +
@@ -61,6 +62,10 @@ begin
     LQuery.ParamByName('data_emissao').AsDateTime   := APedido.DataEmissao;
     LQuery.ParamByName('codigo_cliente').AsInteger  := APedido.CodigoCliente;
     LQuery.ParamByName('valor_total').AsCurrency    := APedido.ValorTotal;
+    if Trim(APedido.Observacao) = '' then
+      LQuery.ParamByName('observacao').Clear
+    else
+      LQuery.ParamByName('observacao').AsString := APedido.Observacao;
     LQuery.ExecSQL;
   finally
     LQuery.Free;

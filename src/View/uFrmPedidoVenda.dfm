@@ -2,7 +2,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
   Left = 0
   Top = 0
   Caption = 'Pedido de Venda'
-  ClientHeight = 520
+  ClientHeight = 551
   ClientWidth = 820
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
     Left = 8
     Top = 8
     Width = 804
-    Height = 89
+    Height = 120
     BevelOuter = bvLowered
     Caption = ' '
     TabOrder = 0
@@ -93,10 +93,26 @@ object FrmPedidoVenda: TFrmPedidoVenda
       OnExit = edCodigoClienteExit
       OnKeyDown = EditPulaCampoKeyDown
     end
+    object lblObservacao: TLabel
+      Left = 12
+      Top = 60
+      Width = 64
+      Height = 15
+      Caption = 'Observacao'
+    end
+    object edObservacao: TEdit
+      Left = 12
+      Top = 80
+      Width = 778
+      Height = 23
+      MaxLength = 255
+      TabOrder = 1
+      OnKeyDown = EditPulaCampoKeyDown
+    end
   end
   object pnlItem: TPanel
     Left = 8
-    Top = 104
+    Top = 135
     Width = 804
     Height = 89
     BevelOuter = bvLowered
@@ -180,7 +196,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
   end
   object grdItens: TStringGrid
     Left = 8
-    Top = 200
+    Top = 231
     Width = 804
     Height = 230
     DefaultRowHeight = 22
@@ -192,7 +208,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
   end
   object pnlRodape: TPanel
     Left = 8
-    Top = 438
+    Top = 469
     Width = 804
     Height = 74
     BevelOuter = bvLowered
