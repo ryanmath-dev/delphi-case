@@ -184,5 +184,6 @@ object FrmPedidoVenda: TFrmPedidoVenda
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goThumbTracking]
     TabOrder = 2
+    OnKeyDown = grdItensKeyDown
   end
 end

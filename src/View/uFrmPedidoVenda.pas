@@ -40,6 +40,8 @@ type
     procedure edCodigoClienteExit(Sender: TObject);
     procedure edCodigoProdutoExit(Sender: TObject);
     procedure btnInserirAtualizarItemClick(Sender: TObject);
+    procedure grdItensKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   strict private
     FConn: TFDConnection;
     FClienteAtual: TCliente;
@@ -285,6 +287,53 @@ begin
 
   RenderGrid;
   LimparCamposItem;
+end;
+
+procedure TFrmPedidoVenda.grdItensKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  LIndice: Integer;
+  LItem: TPedidoItem;
+begin
+  LIndice := grdItens.Row - 1;
+  if (LIndice < 0) or (LIndice >= FItens.Count) then
+    Exit;
+
+  case Key of
+    VK_RETURN:
+      begin
+        LItem := FItens[LIndice];
+        FProdutoAtual.Codigo     := LItem.CodigoProduto;
+        FProdutoAtual.Descricao  := LItem.Descricao;
+        FProdutoAtual.PrecoVenda := LItem.ValorUnitario;
+
+        edCodigoProduto.Text     := IntToStr(LItem.CodigoProduto);
+        lblDescricaoValor.Caption := LItem.Descricao;
+        edQuantidade.Text        := FormatFloat('#,##0.###', LItem.Quantidade);
+        edValorUnitario.Text     := FormatFloat('#,##0.00', LItem.ValorUnitario);
+
+        FIndiceEdicao := LIndice;
+        btnInserirAtualizarItem.Caption := 'Atualizar Item';
+        edQuantidade.SetFocus;
+        Key := 0;
+      end;
+
+    VK_DELETE:
+      begin
+        if Application.MessageBox('Confirma a exclusao do item selecionado?',
+          'Pedido de Venda', MB_YESNO or MB_ICONQUESTION) <> ID_YES then
+          Exit;
+
+        FItens.Delete(LIndice);
+        if FIndiceEdicao = LIndice then
+          LimparCamposItem
+        else if FIndiceEdicao > LIndice then
+          Dec(FIndiceEdicao);
+
+        RenderGrid;
+        Key := 0;
+      end;
+  end;
 end;
 
 end.
