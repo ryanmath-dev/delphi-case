@@ -250,5 +250,24 @@ object FrmPedidoVenda: TFrmPedidoVenda
       TabOrder = 0
       OnClick = btnGravarPedidoClick
     end
+    object btnCarregarPedido: TButton
+      Left = 360
+      Top = 40
+      Width = 130
+      Height = 28
+      Caption = 'Carregar Pedido'
+      TabOrder = 1
+      OnClick = btnCarregarPedidoClick
+    end
+    object btnCancelarPedido: TButton
+      Left = 496
+      Top = 40
+      Width = 130
+      Height = 28
+      Caption = 'Cancelar Pedido'
+      Enabled = False
+      TabOrder = 2
+      OnClick = btnCancelarPedidoClick
+    end
   end
 end

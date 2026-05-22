@@ -41,6 +41,8 @@ type
     lblValorTotalCaption: TLabel;
     lblValorTotal: TLabel;
     btnGravarPedido: TButton;
+    btnCarregarPedido: TButton;
+    btnCancelarPedido: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -50,6 +52,8 @@ type
     procedure grdItensKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnGravarPedidoClick(Sender: TObject);
+    procedure btnCarregarPedidoClick(Sender: TObject);
+    procedure btnCancelarPedidoClick(Sender: TObject);
     procedure EditPulaCampoKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure edValorUnitarioKeyDown(Sender: TObject; var Key: Word;
@@ -61,6 +65,7 @@ type
     FItens: TPedidoItemList;
     FIndiceEdicao: Integer;
     FFmt: TFormatSettings;
+    FNumeroCarregado: Integer;
     procedure LimparCliente;
     procedure LimparProduto;
     procedure LimparCamposItem;
@@ -68,6 +73,7 @@ type
     procedure RenderGrid;
     procedure RecalcularTotal;
     procedure AtualizarHabilitacaoGravar;
+    procedure AtualizarHabilitacaoCancelar;
     procedure LimparPedido;
     procedure Aviso(const ATexto: string);
     procedure Erro(const ATexto: string);
@@ -112,11 +118,13 @@ begin
   end;
   FItens := TPedidoItemList.Create(True);
   FIndiceEdicao := -1;
+  FNumeroCarregado := 0;
   ConfigurarGrid;
   LimparCliente;
   LimparProduto;
   RecalcularTotal;
   btnGravarPedido.Enabled := False;
+  btnCancelarPedido.Enabled := False;
 end;
 
 procedure TFrmPedidoVenda.Aviso(const ATexto: string);
@@ -401,13 +409,21 @@ end;
 
 procedure TFrmPedidoVenda.AtualizarHabilitacaoGravar;
 begin
-  btnGravarPedido.Enabled := (FClienteAtual.Codigo > 0) and (FItens.Count > 0);
+  btnGravarPedido.Enabled := (FClienteAtual.Codigo > 0)
+    and (FItens.Count > 0)
+    and (FNumeroCarregado = 0);
+end;
+
+procedure TFrmPedidoVenda.AtualizarHabilitacaoCancelar;
+begin
+  btnCancelarPedido.Enabled := FNumeroCarregado > 0;
 end;
 
 procedure TFrmPedidoVenda.LimparPedido;
 begin
   FItens.Clear;
   FIndiceEdicao := -1;
+  FNumeroCarregado := 0;
   edCodigoCliente.Text := '';
   edObservacao.Text := '';
   LimparCliente;
@@ -418,6 +434,7 @@ begin
   RenderGrid;
   RecalcularTotal;
   AtualizarHabilitacaoGravar;
+  AtualizarHabilitacaoCancelar;
   edCodigoCliente.SetFocus;
 end;
 
@@ -461,6 +478,116 @@ begin
     end;
   finally
     AtualizarHabilitacaoGravar;
+  end;
+end;
+
+procedure TFrmPedidoVenda.btnCarregarPedidoClick(Sender: TObject);
+var
+  LInput: string;
+  LNumero: Integer;
+  LPedido: TPedido;
+  LItemOrig, LItemCopia: TPedidoItem;
+  LCliente: TCliente;
+begin
+  LInput := InputBox('Carregar Pedido', 'Numero do pedido:', '');
+  if Trim(LInput) = '' then
+    Exit;
+
+  if not TryStrToInt(Trim(LInput), LNumero) or (LNumero <= 0) then
+  begin
+    Aviso('Numero do pedido invalido.');
+    Exit;
+  end;
+
+  LPedido := TPedido.Create;
+  try
+    try
+      if not TPedidoService.CarregarPedido(FConn, LNumero, LPedido) then
+      begin
+        Aviso(Format('Pedido n. %d nao encontrado.', [LNumero]));
+        Exit;
+      end;
+
+      if not TClienteRepository.BuscarPorCodigo(FConn, LPedido.CodigoCliente, LCliente) then
+      begin
+        Erro(Format('Pedido %d aponta para cliente %d, que nao foi encontrado.',
+          [LNumero, LPedido.CodigoCliente]));
+        Exit;
+      end;
+    except
+      on E: Exception do
+      begin
+        Erro('Erro ao carregar pedido:' + sLineBreak + E.Message);
+        Exit;
+      end;
+    end;
+
+    LimparPedido;
+
+    FNumeroCarregado := LPedido.NumeroPedido;
+    FClienteAtual := LCliente;
+    edCodigoCliente.Text := IntToStr(LCliente.Codigo);
+    lblNomeValor.Caption := LCliente.Nome;
+    lblCidadeValor.Caption := LCliente.Cidade;
+    lblUFValor.Caption := LCliente.UF;
+    edObservacao.Text := LPedido.Observacao;
+
+    for LItemOrig in LPedido.Itens do
+    begin
+      LItemCopia := TPedidoItem.Create;
+      LItemCopia.CodigoProduto := LItemOrig.CodigoProduto;
+      LItemCopia.Descricao     := LItemOrig.Descricao;
+      LItemCopia.Quantidade    := LItemOrig.Quantidade;
+      LItemCopia.ValorUnitario := LItemOrig.ValorUnitario;
+      FItens.Add(LItemCopia);
+    end;
+
+    RenderGrid;
+    RecalcularTotal;
+    AtualizarHabilitacaoGravar;
+    AtualizarHabilitacaoCancelar;
+
+    Application.MessageBox(PChar(Format('Pedido n. %d carregado (%d itens). ' +
+      'Para gravar um novo pedido limpe a tela.',
+      [LPedido.NumeroPedido, LPedido.Itens.Count])),
+      'Pedido de Venda', MB_OK or MB_ICONINFORMATION);
+  finally
+    LPedido.Free;
+  end;
+end;
+
+procedure TFrmPedidoVenda.btnCancelarPedidoClick(Sender: TObject);
+var
+  LNumero: Integer;
+begin
+  if FNumeroCarregado <= 0 then
+    Exit;
+
+  if Application.MessageBox(PChar(Format(
+    'Confirma o cancelamento do pedido n. %d? Esta operacao remove o cabecalho e todos os itens.',
+    [FNumeroCarregado])), 'Pedido de Venda',
+    MB_YESNO or MB_ICONQUESTION) <> ID_YES then
+    Exit;
+
+  LNumero := FNumeroCarregado;
+  btnCancelarPedido.Enabled := False;
+  try
+    try
+      TPedidoService.CancelarPedido(FConn, LNumero);
+    except
+      on E: Exception do
+      begin
+        Erro('Erro ao cancelar pedido:' + sLineBreak + E.Message);
+        AtualizarHabilitacaoCancelar;
+        Exit;
+      end;
+    end;
+
+    Application.MessageBox(PChar(Format('Pedido n. %d cancelado com sucesso.',
+      [LNumero])), 'Pedido de Venda', MB_OK or MB_ICONINFORMATION);
+    LimparPedido;
+  finally
+    AtualizarHabilitacaoCancelar;
   end;
 end;
 

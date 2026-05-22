@@ -13,6 +13,10 @@ type
   TPedidoService = class
   public
     class function GravarPedido(AConn: TFDConnection; APedido: TPedido): Integer;
+    class function CarregarPedido(AConn: TFDConnection; ANumero: Integer;
+      APedido: TPedido): Boolean;
+    class procedure CancelarPedido(AConn: TFDConnection; ANumero: Integer);
+    class function CalcularTotal(APedido: TPedido): Currency;
   end;
 
 implementation
@@ -63,6 +67,45 @@ begin
   end;
 
   Result := APedido.NumeroPedido;
+end;
+
+class function TPedidoService.CarregarPedido(AConn: TFDConnection;
+  ANumero: Integer; APedido: TPedido): Boolean;
+begin
+  if APedido = nil then
+    raise EPedidoValidationError.Create('Pedido nao informado.');
+  if ANumero <= 0 then
+    raise EPedidoValidationError.Create('Numero de pedido invalido.');
+
+  Result := TPedidoRepository.CarregarPorNumero(AConn, ANumero, APedido);
+end;
+
+class procedure TPedidoService.CancelarPedido(AConn: TFDConnection;
+  ANumero: Integer);
+begin
+  if ANumero <= 0 then
+    raise EPedidoValidationError.Create('Numero de pedido invalido.');
+
+  AConn.StartTransaction;
+  try
+    TPedidoRepository.ExcluirItens(AConn, ANumero);
+    TPedidoRepository.ExcluirCabecalho(AConn, ANumero);
+    AConn.Commit;
+  except
+    AConn.Rollback;
+    raise;
+  end;
+end;
+
+class function TPedidoService.CalcularTotal(APedido: TPedido): Currency;
+var
+  LItem: TPedidoItem;
+begin
+  Result := 0;
+  if APedido = nil then
+    Exit;
+  for LItem in APedido.Itens do
+    Result := Result + LItem.ValorTotal;
 end;
 
 end.
