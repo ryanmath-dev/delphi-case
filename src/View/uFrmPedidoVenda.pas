@@ -48,12 +48,17 @@ type
     procedure grdItensKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnGravarPedidoClick(Sender: TObject);
+    procedure EditPulaCampoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edValorUnitarioKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   strict private
     FConn: TFDConnection;
     FClienteAtual: TCliente;
     FProdutoAtual: TProduto;
     FItens: TPedidoItemList;
     FIndiceEdicao: Integer;
+    FFmt: TFormatSettings;
     procedure LimparCliente;
     procedure LimparProduto;
     procedure LimparCamposItem;
@@ -62,6 +67,8 @@ type
     procedure RecalcularTotal;
     procedure AtualizarHabilitacaoGravar;
     procedure LimparPedido;
+    procedure Aviso(const ATexto: string);
+    procedure Erro(const ATexto: string);
     function ValidarCamposItem(out AQtd: Double; out AValor: Currency): Boolean;
   end;
 
@@ -87,13 +94,16 @@ const
 
 procedure TFrmPedidoVenda.FormCreate(Sender: TObject);
 begin
+  FFmt := TFormatSettings.Create('pt-BR');
+  FFmt.DecimalSeparator  := ',';
+  FFmt.ThousandSeparator := '.';
+
   try
     FConn := TConnectionFactory.CreateConnection;
   except
     on E: Exception do
     begin
-      Application.MessageBox(PChar('Falha ao conectar ao banco:' + sLineBreak + E.Message),
-        'Pedido de Venda', MB_OK or MB_ICONERROR);
+      Erro('Falha ao conectar ao banco:' + sLineBreak + E.Message);
       Application.Terminate;
       Exit;
     end;
@@ -105,6 +115,18 @@ begin
   LimparProduto;
   RecalcularTotal;
   btnGravarPedido.Enabled := False;
+end;
+
+procedure TFrmPedidoVenda.Aviso(const ATexto: string);
+begin
+  Application.MessageBox(PChar(ATexto), 'Pedido de Venda',
+    MB_OK or MB_ICONWARNING);
+end;
+
+procedure TFrmPedidoVenda.Erro(const ATexto: string);
+begin
+  Application.MessageBox(PChar(ATexto), 'Pedido de Venda',
+    MB_OK or MB_ICONERROR);
 end;
 
 procedure TFrmPedidoVenda.FormDestroy(Sender: TObject);
@@ -151,9 +173,9 @@ begin
     LItem := FItens[i];
     grdItens.Cells[COL_CODIGO, i + 1]    := IntToStr(LItem.CodigoProduto);
     grdItens.Cells[COL_DESCRICAO, i + 1] := LItem.Descricao;
-    grdItens.Cells[COL_QTD, i + 1]       := FormatFloat('#,##0.###', LItem.Quantidade);
-    grdItens.Cells[COL_VLR_UNIT, i + 1]  := FormatFloat('#,##0.00', LItem.ValorUnitario);
-    grdItens.Cells[COL_VLR_TOTAL, i + 1] := FormatFloat('#,##0.00', LItem.ValorTotal);
+    grdItens.Cells[COL_QTD, i + 1]       := FormatFloat('#,##0.###', LItem.Quantidade, FFmt);
+    grdItens.Cells[COL_VLR_UNIT, i + 1]  := FormatFloat('#,##0.00', LItem.ValorUnitario, FFmt);
+    grdItens.Cells[COL_VLR_TOTAL, i + 1] := FormatFloat('#,##0.00', LItem.ValorTotal, FFmt);
   end;
 end;
 
@@ -165,7 +187,7 @@ begin
   LSoma := 0;
   for LItem in FItens do
     LSoma := LSoma + LItem.ValorTotal;
-  lblValorTotal.Caption := FormatFloat('#,##0.00', LSoma);
+  lblValorTotal.Caption := FormatFloat('#,##0.00', LSoma, FFmt);
 end;
 
 procedure TFrmPedidoVenda.LimparCliente;
@@ -203,18 +225,25 @@ begin
 
   if not TryStrToInt(Trim(edCodigoCliente.Text), LCodigo) then
   begin
-    Application.MessageBox('Codigo do cliente deve ser numerico.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
+    Aviso('Codigo do cliente deve ser numerico.');
     edCodigoCliente.SetFocus;
     Exit;
   end;
 
-  if not TClienteRepository.BuscarPorCodigo(FConn, LCodigo, FClienteAtual) then
-  begin
-    Application.MessageBox('Cliente nao encontrado.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
-    edCodigoCliente.SetFocus;
-    Exit;
+  try
+    if not TClienteRepository.BuscarPorCodigo(FConn, LCodigo, FClienteAtual) then
+    begin
+      Aviso('Cliente nao encontrado.');
+      edCodigoCliente.SetFocus;
+      Exit;
+    end;
+  except
+    on E: Exception do
+    begin
+      Erro('Erro ao consultar cliente:' + sLineBreak + E.Message);
+      edCodigoCliente.SetFocus;
+      Exit;
+    end;
   end;
 
   lblNomeValor.Caption := FClienteAtual.Nome;
@@ -233,22 +262,29 @@ begin
 
   if not TryStrToInt(Trim(edCodigoProduto.Text), LCodigo) then
   begin
-    Application.MessageBox('Codigo do produto deve ser numerico.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
+    Aviso('Codigo do produto deve ser numerico.');
     edCodigoProduto.SetFocus;
     Exit;
   end;
 
-  if not TProdutoRepository.BuscarPorCodigo(FConn, LCodigo, FProdutoAtual) then
-  begin
-    Application.MessageBox('Produto nao encontrado.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
-    edCodigoProduto.SetFocus;
-    Exit;
+  try
+    if not TProdutoRepository.BuscarPorCodigo(FConn, LCodigo, FProdutoAtual) then
+    begin
+      Aviso('Produto nao encontrado.');
+      edCodigoProduto.SetFocus;
+      Exit;
+    end;
+  except
+    on E: Exception do
+    begin
+      Erro('Erro ao consultar produto:' + sLineBreak + E.Message);
+      edCodigoProduto.SetFocus;
+      Exit;
+    end;
   end;
 
   lblDescricaoValor.Caption := FProdutoAtual.Descricao;
-  edValorUnitario.Text := FormatFloat('#,##0.00', FProdutoAtual.PrecoVenda);
+  edValorUnitario.Text := FormatFloat('#,##0.00', FProdutoAtual.PrecoVenda, FFmt);
 end;
 
 function TFrmPedidoVenda.ValidarCamposItem(out AQtd: Double;
@@ -262,24 +298,21 @@ begin
 
   if FProdutoAtual.Codigo = 0 then
   begin
-    Application.MessageBox('Informe um produto valido antes de inserir o item.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
+    Aviso('Informe um produto valido antes de inserir o item.');
     edCodigoProduto.SetFocus;
     Exit;
   end;
 
-  if not TryStrToFloat(Trim(edQuantidade.Text), AQtd) or (AQtd <= 0) then
+  if not TryStrToFloat(Trim(edQuantidade.Text), AQtd, FFmt) or (AQtd <= 0) then
   begin
-    Application.MessageBox('Quantidade deve ser numerica e maior que zero.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
+    Aviso('Quantidade deve ser numerica e maior que zero.');
     edQuantidade.SetFocus;
     Exit;
   end;
 
-  if not TryStrToFloat(Trim(edValorUnitario.Text), LValorFloat) or (LValorFloat < 0) then
+  if not TryStrToFloat(Trim(edValorUnitario.Text), LValorFloat, FFmt) or (LValorFloat < 0) then
   begin
-    Application.MessageBox('Valor unitario invalido.',
-      'Pedido de Venda', MB_OK or MB_ICONWARNING);
+    Aviso('Valor unitario invalido.');
     edValorUnitario.SetFocus;
     Exit;
   end;
@@ -335,8 +368,8 @@ begin
 
         edCodigoProduto.Text     := IntToStr(LItem.CodigoProduto);
         lblDescricaoValor.Caption := LItem.Descricao;
-        edQuantidade.Text        := FormatFloat('#,##0.###', LItem.Quantidade);
-        edValorUnitario.Text     := FormatFloat('#,##0.00', LItem.ValorUnitario);
+        edQuantidade.Text        := FormatFloat('#,##0.###', LItem.Quantidade, FFmt);
+        edValorUnitario.Text     := FormatFloat('#,##0.00', LItem.ValorUnitario, FFmt);
 
         FIndiceEdicao := LIndice;
         btnInserirAtualizarItem.Caption := 'Atualizar Item';
@@ -410,8 +443,7 @@ begin
       except
         on E: Exception do
         begin
-          Application.MessageBox(PChar('Erro ao gravar pedido:' + sLineBreak + E.Message),
-            'Pedido de Venda', MB_OK or MB_ICONERROR);
+          Erro('Erro ao gravar pedido:' + sLineBreak + E.Message);
           Exit;
         end;
       end;
@@ -424,6 +456,26 @@ begin
     end;
   finally
     AtualizarHabilitacaoGravar;
+  end;
+end;
+
+procedure TFrmPedidoVenda.EditPulaCampoKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    SelectNext(Sender as TWinControl, True, True);
+    Key := 0;
+  end;
+end;
+
+procedure TFrmPedidoVenda.edValorUnitarioKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    btnInserirAtualizarItem.Click;
+    Key := 0;
   end;
 end;
 

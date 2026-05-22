@@ -91,6 +91,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
       NumbersOnly = True
       TabOrder = 0
       OnExit = edCodigoClienteExit
+      OnKeyDown = EditPulaCampoKeyDown
     end
   end
   object pnlItem: TPanel
@@ -148,6 +149,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
       NumbersOnly = True
       TabOrder = 0
       OnExit = edCodigoProdutoExit
+      OnKeyDown = EditPulaCampoKeyDown
     end
     object edQuantidade: TEdit
       Left = 530
@@ -156,6 +158,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
       Height = 23
       TabOrder = 1
       Text = '1'
+      OnKeyDown = EditPulaCampoKeyDown
     end
     object edValorUnitario: TEdit
       Left = 638
@@ -163,6 +166,7 @@ object FrmPedidoVenda: TFrmPedidoVenda
       Width = 152
       Height = 23
       TabOrder = 2
+      OnKeyDown = edValorUnitarioKeyDown
     end
     object btnInserirAtualizarItem: TButton
       Left = 638
