@@ -77,6 +77,7 @@ type
     procedure LimparPedido;
     procedure Aviso(const ATexto: string);
     procedure Erro(const ATexto: string);
+    function ParseDecimal(const ATexto: string; out AValor: Double): Boolean;
     function ValidarCamposItem(out AQtd: Double; out AValor: Currency): Boolean;
   end;
 
@@ -137,6 +138,18 @@ procedure TFrmPedidoVenda.Erro(const ATexto: string);
 begin
   Application.MessageBox(PChar(ATexto), 'Pedido de Venda',
     MB_OK or MB_ICONERROR);
+end;
+
+function TFrmPedidoVenda.ParseDecimal(const ATexto: string;
+  out AValor: Double): Boolean;
+var
+  LLimpo: string;
+begin
+  LLimpo := Trim(ATexto);
+  if FFmt.ThousandSeparator <> #0 then
+    LLimpo := StringReplace(LLimpo, FFmt.ThousandSeparator, '',
+      [rfReplaceAll]);
+  Result := TryStrToFloat(LLimpo, AValor, FFmt);
 end;
 
 procedure TFrmPedidoVenda.FormDestroy(Sender: TObject);
@@ -313,14 +326,14 @@ begin
     Exit;
   end;
 
-  if not TryStrToFloat(Trim(edQuantidade.Text), AQtd, FFmt) or (AQtd <= 0) then
+  if not ParseDecimal(edQuantidade.Text, AQtd) or (AQtd <= 0) then
   begin
     Aviso('Quantidade deve ser numerica e maior que zero.');
     edQuantidade.SetFocus;
     Exit;
   end;
 
-  if not TryStrToFloat(Trim(edValorUnitario.Text), LValorFloat, FFmt) or (LValorFloat < 0) then
+  if not ParseDecimal(edValorUnitario.Text, LValorFloat) or (LValorFloat < 0) then
   begin
     Aviso('Valor unitario invalido.');
     edValorUnitario.SetFocus;
