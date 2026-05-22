@@ -1,0 +1,24 @@
+; ============================================================
+;  config.ini.example  --  Template de configuracao do banco
+; ------------------------------------------------------------
+;  Copie este arquivo para "config.ini" (mesmo diretorio do
+;  executavel) e ajuste os valores conforme o seu ambiente.
+;  IMPORTANTE: config.ini esta no .gitignore e NUNCA deve ser
+;  versionado, pois pode conter credenciais reais.
+; ============================================================
+
+[Database]
+; Caminho absoluto do arquivo .fdb no servidor Firebird.
+Database=C:\firebird-data\PEDIDOS.FDB
+
+; Usuario e senha do Firebird (padrao da instalacao: SYSDBA / masterkey).
+Username=SYSDBA
+Password=masterkey
+
+; Host e porta do servidor Firebird.
+Server=localhost
+Port=3050
+
+; Caminho absoluto do fbclient.dll distribuido junto com a aplicacao.
+; Recomendado apontar para a copia em .\bin\fbclient.dll.
+ClientLibrary=.\bin\fbclient.dll
