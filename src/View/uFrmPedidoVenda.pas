@@ -392,6 +392,7 @@ begin
           Dec(FIndiceEdicao);
 
         RenderGrid;
+        RecalcularTotal;
         AtualizarHabilitacaoGravar;
         Key := 0;
       end;
