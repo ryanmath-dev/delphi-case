@@ -120,3 +120,40 @@ ALTER TABLE PEDIDO_ITEM
   FOREIGN KEY (CODIGO_PRODUTO) REFERENCES PRODUTO (CODIGO);
 
 COMMIT;
+
+/* =====================================================================
+   6) CARGA DE DADOS PARA TESTE
+   ===================================================================== */
+
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (1,  'Joao da Silva',          'Sao Paulo',      'SP');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (2,  'Maria Oliveira',         'Rio de Janeiro', 'RJ');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (3,  'Carlos Pereira',         'Belo Horizonte', 'MG');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (4,  'Ana Souza',              'Curitiba',       'PR');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (5,  'Pedro Santos',           'Porto Alegre',   'RS');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (6,  'Juliana Costa',          'Salvador',       'BA');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (7,  'Ricardo Almeida',        'Fortaleza',      'CE');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (8,  'Patricia Lima',          'Recife',         'PE');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (9,  'Fernando Rocha',         'Florianopolis',  'SC');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (10, 'Beatriz Martins',        'Goiania',        'GO');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (11, 'Lucas Ferreira',         'Manaus',         'AM');
+INSERT INTO CLIENTE (CODIGO, NOME, CIDADE, UF) VALUES (12, 'Camila Ribeiro',         'Brasilia',       'DF');
+
+COMMIT;
+
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (1,  'Notebook Dell Inspiron 15',          3499.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (2,  'Mouse Logitech MX Master 3',          589.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (3,  'Teclado Mecanico Keychron K2',        749.50);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (4,  'Monitor LG 27 polegadas 4K',         2199.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (5,  'Webcam Logitech C920',                399.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (6,  'Headset HyperX Cloud II',             549.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (7,  'SSD Kingston NV2 1TB',                429.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (8,  'Memoria RAM Corsair 16GB DDR4',       289.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (9,  'Cadeira Gamer DT3 Sports',           1499.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (10, 'Mesa Digitalizadora Wacom One',       899.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (11, 'Roteador TP-Link Archer AX23',        349.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (12, 'Hub USB-C Anker 7 em 1',              279.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (13, 'Cabo HDMI 2.1 Belkin 2m',              89.90);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (14, 'Suporte Articulado p/ Monitor',       219.00);
+INSERT INTO PRODUTO (CODIGO, DESCRICAO, PRECO_VENDA) VALUES (15, 'No-Break APC Back-UPS 1500VA',        899.00);
+
+COMMIT;
