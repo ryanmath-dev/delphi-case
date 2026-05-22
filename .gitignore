@@ -1,0 +1,54 @@
+# ===== Delphi / RAD Studio =====
+__history/
+__recovery/
+*.local
+*.identcache
+*.dsk
+*.tvsconfig
+*.stat
+*.~*
+*.dcu
+*.dproj.local
+*.groupproj.local
+*.cfg
+*.map
+*.drc
+*.s
+*.tds
+*.cbk
+*.dbk
+
+# Build output
+Win32/
+Win64/
+Debug/
+Release/
+__astcache/
+ModelSupport_*/
+
+# ===== Project specific =====
+# NUNCA versionar credenciais reais
+config.ini
+
+# Banco gerado localmente (use db.sql para recriar)
+*.fdb
+*.FDB
+
+# Logs e dumps locais
+*.log
+*.dmp
+
+# ===== Editor =====
+.vscode/
+.idea/
+*.swp
+*.bak
+*~
+
+# ===== OS =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== Manter pastas vazias =====
+!.gitkeep
