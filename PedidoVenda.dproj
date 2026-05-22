@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{6B7B0E7F-2C2D-4A1C-9E1B-PEDIDOVENDA01}</ProjectGuid>
+        <ProjectGuid>{151D92DA-10B5-4028-A9C6-E4FF1FD0BCE8}</ProjectGuid>
         <ProjectVersion>20.1</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>PedidoVenda.dpr</MainSource>
